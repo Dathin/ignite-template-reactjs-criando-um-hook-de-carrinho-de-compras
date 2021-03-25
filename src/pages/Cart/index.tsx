@@ -20,12 +20,15 @@ const Cart = (): JSX.Element => {
   const { cart, removeProduct, updateProductAmount } = useCart();
 
   const cartFormatted = cart.map(product => ({
-    // TODO
-  }))
+    ...product,
+    priceFormatted: formatPrice(product.price),
+    subTotal: formatPrice(calculateSubTotal(product))
+  }));
+
   const total =
     formatPrice(
       cart.reduce((sumTotal, product) => {
-        return sumTotal;
+        return sumTotal + calculateSubTotal(product);
       }, 0)
     )
 
@@ -38,11 +41,8 @@ const Cart = (): JSX.Element => {
   }
 
   function handleRemoveProduct(productId: number) {
-    console.log(productId)
     removeProduct(productId)
   }
-
-  console.log(cart)
 
   return (
     <Container>
@@ -57,14 +57,14 @@ const Cart = (): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          {cart.map(product => (
+          {cartFormatted.map(product => (
            <tr key={product.id} data-testid="product">
             <td>
               <img src={product.image} alt={product.title} />
             </td>
             <td>
               <strong>{product.title}</strong>
-              <span>R$ {product.price}</span>
+              <span>{product.price}</span>
             </td>
             <td>
               <div>
@@ -92,7 +92,7 @@ const Cart = (): JSX.Element => {
               </div>
             </td>
             <td>
-              <strong>R$ 359,80</strong>
+              <strong>{product.subTotal}</strong>
             </td>
             <td>
               <button
@@ -113,11 +113,15 @@ const Cart = (): JSX.Element => {
 
         <Total>
           <span>TOTAL</span>
-          <strong>R$ 359,80</strong>
+          <strong>{total}</strong>
         </Total>
       </footer>
     </Container>
   );
 };
+
+const calculateSubTotal = (product: Product) => {
+  return product.price * product.amount;
+}
 
 export default Cart;
