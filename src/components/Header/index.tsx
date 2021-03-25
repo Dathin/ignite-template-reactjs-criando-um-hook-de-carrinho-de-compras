@@ -4,12 +4,12 @@ import { MdShoppingBasket } from 'react-icons/md';
 import logo from '../../assets/images/logo.svg';
 import { Container, Cart } from './styles';
 import { useCart } from '../../hooks/useCart';
+import { Product } from '../../types';
 
 const Header = (): JSX.Element => {
   const { cart } = useCart();
   
-  const producs = cart.map(product => product.id);
-  const cartSize = new Set(producs).size
+  const cartSize = getCartSize(cart);
 
   return (
     <Container>
@@ -29,5 +29,10 @@ const Header = (): JSX.Element => {
     </Container>
   );
 };
+
+const getCartSize = (cart: Product[]): number => {
+  const producs = cart.map(product => product.id);
+  return new Set(producs).size
+}
 
 export default Header;

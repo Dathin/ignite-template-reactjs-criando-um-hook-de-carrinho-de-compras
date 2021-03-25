@@ -38,6 +38,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       const newCart = [...cart];
       const cartProduct = newCart.find(product => product.id === productId);
       const cartProductAmmout = (cartProduct?.amount ?? 0) + 1;
+      console.log(cartProductAmmout);
       if(cartProductAmmout > stockData.amount){
         toast.error('Quantidade solicitada fora de estoque');
         return;
@@ -45,10 +46,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       if (cartProduct) {
         cartProduct.amount = cartProductAmmout;
       } else {
-        newCart.push(productData)
+        newCart.push({...productData, amount: 1})
       }
       setCart(newCart);
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
+      // localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
     } catch {
       toast.error('Erro na adição do produto');
     }
@@ -64,7 +65,8 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     try {
       const newCart = [...cart];
       const cartProductIndex = newCart.findIndex(product => product.id === productId);
-      newCart.splice(cartProductIndex);
+      newCart.splice(cartProductIndex, 1);
+      setCart(newCart);
     } catch {
       toast.error('Erro na remoção do produto');
     }
@@ -79,11 +81,13 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       const newCart = [...cart];
       const cartProduct = newCart.find(product => product.id === productId);
       if(cartProduct) {
-        cartProduct.amount = amount;
-        if(cartProduct.amount > stockData.amount){
+        if(amount > stockData.amount){
           toast.error('Quantidade solicitada fora de estoque');
+          return;
         }
+        cartProduct.amount = amount;
       }
+      setCart(newCart);
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }
