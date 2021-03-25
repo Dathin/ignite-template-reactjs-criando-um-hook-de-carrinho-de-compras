@@ -48,7 +48,6 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         newCart.push({...productData, amount: 1})
       }
       persistCart(newCart);
-      // localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
     } catch {
       toast.error('Erro na adição do produto');
     }
@@ -56,7 +55,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const getStockProductData = async (productId: number): Promise<{stockData: Stock, productData: Product}> => {
     const {data: stockData} = await api.get(`stock/${productId}`);
-    const {data: productData} = await  api.get(`products/${productId}`);
+    const {data: productData} = await api.get(`products/${productId}`);
     return {stockData, productData};
   }
 
@@ -64,6 +63,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     try {
       const newCart = [...cart];
       const cartProductIndex = newCart.findIndex(product => product.id === productId);
+      if(cartProductIndex === -1) {
+        toast.error('Erro na remoção do produto');
+        return;
+      }
       newCart.splice(cartProductIndex, 1);
       persistCart(newCart);
     } catch {
@@ -76,6 +79,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
+      if(amount === 0) return;
       const {data: stockData} = await api.get(`stock/${productId}`);
       const newCart = [...cart];
       const cartProduct = newCart.find(product => product.id === productId);
