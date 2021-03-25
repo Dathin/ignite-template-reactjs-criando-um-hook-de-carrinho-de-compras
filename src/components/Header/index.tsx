@@ -7,7 +7,6 @@ import { useCart } from '../../hooks/useCart';
 
 const Header = (): JSX.Element => {
   const { cart } = useCart();
-  console.log(cart);
   
   const producs = cart.map(product => product.id);
   const cartSize = new Set(producs).size
